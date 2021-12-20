@@ -6,7 +6,9 @@ import 'home.dart';
 enum MobileVerificationState { MOBILE_FORM, OTP_FORM }
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+  final Function setUser;
+  
+  const Login({Key? key, required this.setUser}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -26,12 +28,12 @@ class _LoginState extends State<Login> {
   getMobileFormWidget(context) {
     return Column(
       children: [
-        Spacer(),
+        const Spacer(),
         TextField(
           controller: mobileController,
-          decoration: InputDecoration(hintText: "Phone Number"),
+          decoration: const InputDecoration(hintText: "Phone Number"),
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         FlatButton(
@@ -61,8 +63,8 @@ class _LoginState extends State<Login> {
                     });
                   });
             },
-            child: Text("Verify")),
-        Spacer()
+            child: const Text("Verify")),
+        const Spacer()
       ],
     );
   }
@@ -70,12 +72,12 @@ class _LoginState extends State<Login> {
   getOtpFormWidget(context) {
     return Column(
       children: [
-        Spacer(),
+        const Spacer(),
         TextField(
           controller: otpController,
-          decoration: InputDecoration(hintText: "OTP"),
+          decoration: const InputDecoration(hintText: "OTP"),
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         FlatButton(
@@ -88,19 +90,15 @@ class _LoginState extends State<Login> {
                 });
 
                 if (userCredential != null && userCredential.user != null) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              MyHomePage(title: "logged in")));
+                  widget.setUser(userCredential.user);
                 } else {
                   _scaffoldKey.currentState?.showSnackBar(
                       SnackBar(content: Text(errorMsg)));
                 }
               });
             },
-            child: Text("Verify")),
-        Spacer()
+            child: const Text("Verify")),
+        const Spacer(),
       ],
     );
   }
@@ -113,7 +111,7 @@ class _LoginState extends State<Login> {
         key: _scaffoldKey,
         body: Container(
           child: loading
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(),
                 )
               : currentState == MobileVerificationState.MOBILE_FORM

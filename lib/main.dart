@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:menu/screens/home.dart';
 import 'package:menu/screens/login.dart';
 
 void main() async {
@@ -11,24 +13,37 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'menu',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const Login(),
+      home: const Wrapper(),
     );
+  }
+}
+
+class Wrapper extends StatefulWidget {
+  const Wrapper({Key? key}) : super(key: key);
+
+  @override
+  _WrapperState createState() => _WrapperState();
+}
+
+class _WrapperState extends State<Wrapper> {
+  User? user = null;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return user != null
+        ? const MyHomePage(title: "Logged In")
+        : Login(setUser: (user) {
+            setState(() {
+              this.user = user;
+            });
+          });
   }
 }
