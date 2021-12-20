@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:menu/services/auth.dart';
 
@@ -18,7 +17,6 @@ class _LoginState extends State<Login> {
   final mobileController = TextEditingController();
   final otpController = TextEditingController();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthService auth = AuthService.instance;
 
   late String verificationId;
@@ -41,29 +39,27 @@ class _LoginState extends State<Login> {
               setState(() {
                 loading = true;
               });
-              _auth.verifyPhoneNumber(
+              auth.phoneSignIn(
                   phoneNumber: mobileController.text,
-                  timeout: const Duration(seconds: 60),
-                  verificationCompleted: (phoneAuthCredential) async {
+                  verifiedCallback: (phoneAuthCredential) async {
                     setState(() {
                       loading = false;
                     });
                   },
-                  verificationFailed: (exception) async {
+                  verifyFailedCallback: (errorMsg) async {
                     setState(() {
                       loading = false;
                     });
                     _scaffoldKey.currentState?.showSnackBar(
-                        SnackBar(content: Text(exception.message as String)));
+                        SnackBar(content: Text(errorMsg)));
                   },
-                  codeSent: (verificationId, resendingToken) async {
+                  codeSentCallback: (verificationId) async {
                     setState(() {
                       currentState = MobileVerificationState.OTP_FORM;
                       this.verificationId = verificationId;
                       loading = false;
                     });
-                  },
-                  codeAutoRetrievalTimeout: (x) {});
+                  });
             },
             child: Text("Verify")),
         Spacer()
@@ -84,10 +80,7 @@ class _LoginState extends State<Login> {
         ),
         FlatButton(
             onPressed: () async {
-              final phoneAuthCredential = PhoneAuthProvider.credential(
-                  verificationId: verificationId, smsCode: otpController.text);
-
-              auth.signInWithPhoneAuthCredential(phoneAuthCredential,
+              auth.signInWithPhoneAuthCredential(verificationId, otpController.text,
                   (userCredential, errorMsg) {
                 print(userCredential);
                 setState(() {
