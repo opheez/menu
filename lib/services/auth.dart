@@ -57,4 +57,9 @@ class AuthService {
   _onCodeTimeout(String timeout) {
     return null;
   }
+
+  void signOut(Function callback) async {
+    await _auth.signOut();
+    callback();
+  }
 }

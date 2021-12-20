@@ -35,15 +35,17 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
   User? user = null;
 
+  setUser(user){
+    setState(() {
+      this.user = user;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
     return user != null
-        ? const MyHomePage(title: "Logged In")
-        : Login(setUser: (user) {
-            setState(() {
-              this.user = user;
-            });
-          });
+        ? MyHomePage(setUser: setUser)
+        : Login(setUser: setUser);
   }
 }
