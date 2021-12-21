@@ -29,20 +29,29 @@ class FirestoreDb {
   //
   // }
 
+
   Future<List<Event>> getEvents(String cid) async {
     var dbEvents = await firestore
-        .collection('events').where('cid', isEqualTo: cid)
-        .withConverter<Event>(
-            fromFirestore: (snapshot, _) =>
-                Event.fromMap(snapshot.id, snapshot.data()!),
-            toFirestore: (event, _) => event.toMap()).get();
+        .collection('events').where('cid', isEqualTo: cid).get();
 
     return List.generate(dbEvents.docs.length, (i) {
-      return dbEvents.docs[i].data();
+      return Event.fromMap(dbEvents.docs[i].id, dbEvents.docs[i].data());
     });
   }
 
-  Future<void> setEvent() async {}
+  Future<void> createEvent(Map<String, dynamic> eventMap) async {
+    // TODO: check fields if they are valid
+    // try{
+    //   Map testMap = Map.from(eventMap);
+    //   testMap['eid'] = -1;
+    //   testEvent = Event(testMap);
+    // }
+    await firestore.collection('events').add(eventMap);
+  }
+
+  Future<void> setEvent(Event event) async {
+
+  }
 
 
 // Future<Event> getEvent(String eid){
