@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:menu/components/eventForm.dart';
+import 'package:menu/components/eventTile.dart';
 import 'package:menu/models/event.dart';
 import 'package:menu/services/auth.dart';
 import 'package:menu/services/database.dart';
@@ -35,14 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     if (loading) return const CircularProgressIndicator();
 
-    List<Widget> eventWidgets = List.generate(this.eventList.length, (index) =>
-       Card(
-        child: Container(
-          padding: EdgeInsets.all(20),
-          child: Column(children: [
-            Text(this.eventList[index].eid)
-          ])
-        ))
+    List<Widget> eventWidgets = List.generate(eventList.length, (index) =>
+        EventTile(event: eventList[index])
     );
 
     return Scaffold(
@@ -50,14 +46,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text("menu"),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: <Widget>[
-            Card(child: Container(
-              padding: EdgeInsets.all(20),
-              child: Text("Create an event"),
-            ),),
+            ElevatedButton(onPressed: () {
+              showDialog(
+                  context: context, builder: (BuildContext builderContext) {
+                return EventForm(buildContext: builderContext);
+              });
+            }, child: const Text("Create a new event")),
             ...eventWidgets
           ],
         ),
