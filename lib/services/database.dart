@@ -30,25 +30,20 @@ class FirestoreDb {
   // }
 
   Future<List<Event>> getEvents(String cid) async {
-    QuerySnapshot dbEvents =
-        await firestore.collection('events').where('cid', isEqualTo: '1').get();
+    var dbEvents = await firestore
+        .collection('events').where('cid', isEqualTo: cid)
+        .withConverter<Event>(
+            fromFirestore: (snapshot, _) =>
+                Event.fromMap(snapshot.id, snapshot.data()!),
+            toFirestore: (event, _) => event.toMap()).get();
+
     return List.generate(dbEvents.docs.length, (i) {
-      // TODO: why is casting object to Map<String, dynamic> valid when in mapToEvent we cant cast List<dynamic> to List<String>?
-      return mapToEvent(dbEvents.docs[i].id, dbEvents.docs[i].data()! as Map<String, dynamic>);
+      return dbEvents.docs[i].data();
     });
   }
 
-  Event mapToEvent(String id, Map<String, dynamic> eventMap) {
-    print(eventMap);
-    return Event(
-        eid: id,
-        cid: eventMap['cid'],
-        hostId: eventMap['hostId'],
-        durationMin: eventMap['durationMin'],
-        maxPeople: eventMap['maxPeople'],
-        confirmedDatetime: (eventMap['confirmedDatetime'].toDate()),
-        confirmedPeople: List<String>.from(eventMap['confirmedPeople']));
-  }
+  Future<void> setEvent() async {}
+
 
 // Future<Event> getEvent(String eid){
 //

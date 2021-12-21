@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Event {
   final String eid;
   final String cid;
@@ -27,4 +29,28 @@ class Event {
       this.maxPeople = 3,
       required this.confirmedDatetime,
       required this.confirmedPeople});
+
+  Event.fromMap(String id, Map<String, Object?> map)
+      : this(
+            eid: id,
+            cid: map['cid']! as String,
+            hostId: map['hostId']! as String,
+            durationMin: map['durationMin']! as int,
+            maxPeople: map['maxPeople']! as int,
+            confirmedDatetime:
+                (map['confirmedDatetime']! as Timestamp).toDate(),
+            confirmedPeople:
+                List<String>.from(map['confirmedPeople']! as List));
+
+  Map<String, Object?> toMap(){
+    return {
+      'eid': eid,
+      'cid': cid,
+      'hostId': hostId,
+      'durationMin': durationMin,
+      'maxPeople': maxPeople,
+      'confirmedDatetime': confirmedDatetime,
+      'confirmedPeople': confirmedPeople
+    };
+  }
 }
