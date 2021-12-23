@@ -1,7 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:menu/models/community.dart';
 import 'package:menu/models/event.dart';
 
-class User {
+class User with ChangeNotifier{
   // Identifying info
   final String uid;
   final String phoneNumber;

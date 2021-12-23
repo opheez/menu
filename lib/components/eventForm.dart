@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:menu/models/user.dart';
 import 'package:menu/services/database.dart';
+import 'package:provider/provider.dart';
 
 class EventForm extends StatefulWidget {
   final BuildContext buildContext;
@@ -21,16 +23,10 @@ class EventFormState extends State<EventForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
     return AlertDialog(
-      title: Text("Create event"),
+      title: const Text("Create event"),
       content: Column(
         children: <Widget>[
-          // 'cid': cid,
-          // 'hostId': hostId,
-          // 'durationMin': durationMin,
-          // 'maxPeople': maxPeople,
-          // 'confirmedDatetime': confirmedDatetime,
           TextFormField(
             controller: durationController,
             decoration: const InputDecoration(labelText: 'Duration (min)'),
@@ -84,7 +80,7 @@ class EventFormState extends State<EventForm> {
           onPressed: () async {
             await _db.createEvent({
               'cid': '1',
-              'hostId': 'x',
+              'hostId': Provider.of<User>(widget.buildContext, listen: true).uid,
               'durationMin': int.parse(durationController.text),
               'maxPeople': int.parse(maxPeopleController.text),
               'confirmedDatetime':

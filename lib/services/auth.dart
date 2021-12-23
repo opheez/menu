@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:menu/models/user.dart' as model;
 
 class AuthService {
 
@@ -62,4 +63,20 @@ class AuthService {
     await _auth.signOut();
     callback();
   }
+
+  model.User? getCurrentUser(){
+    User? user = _auth.currentUser;
+    if (user != null){
+      return model.User(uid: user.uid,
+              phoneNumber: user.phoneNumber!,
+              name: user.displayName ?? "",
+              classYear: 0,
+              communities: [],
+              eventsAttending: [],
+              eventsHosting: []);
+    }
+    return null;
+  }
+
+
 }

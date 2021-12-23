@@ -84,13 +84,13 @@ class _LoginState extends State<Login> {
             onPressed: () async {
               auth.signInWithPhoneAuthCredential(verificationId, otpController.text,
                   (userCredential, errorMsg) {
-                print(userCredential);
                 setState(() {
                   loading = false;
                 });
 
                 if (userCredential != null && userCredential.user != null) {
-                  widget.setUser(userCredential.user);
+                  // widget.setUser(userCredential.user);
+                  widget.setUser(auth.getCurrentUser()!);
                 } else {
                   _scaffoldKey.currentState?.showSnackBar(
                       SnackBar(content: Text(errorMsg)));

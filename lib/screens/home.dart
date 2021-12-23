@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:menu/components/eventForm.dart';
 import 'package:menu/components/eventTile.dart';
 import 'package:menu/models/event.dart';
+import 'package:menu/models/user.dart';
 import 'package:menu/services/auth.dart';
 import 'package:menu/services/database.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   Function setUser;
@@ -24,22 +26,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     // load events
-    _db.getEvents("1").then((eventList) =>
-    {
-      setState(() {
-        this.eventList = eventList;
-        loading = false;
-      })
-    });
+    _db.getEvents("1").then((eventList) => {
+          setState(() {
+            this.eventList = eventList;
+            loading = false;
+          })
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     if (loading) return const CircularProgressIndicator();
 
-    List<Widget> eventWidgets = List.generate(eventList.length, (index) =>
-        EventTile(event: eventList[index])
-    );
+    List<Widget> eventWidgets = List.generate(
+        eventList.length, (index) => EventTile(event: eventList[index]));
 
     return Scaffold(
       appBar: AppBar(
@@ -48,12 +48,15 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: ListView(
           children: <Widget>[
-            ElevatedButton(onPressed: () {
-              showDialog(
-                  context: context, builder: (BuildContext builderContext) {
-                return EventForm(buildContext: builderContext);
-              });
-            }, child: const Text("Create a new event")),
+            ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return EventForm(buildContext: context);
+                      });
+                },
+                child: const Text("Create a new event")),
             ...eventWidgets
           ],
         ),

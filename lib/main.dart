@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:menu/models/user.dart' as model;
 import 'package:menu/screens/home.dart';
 import 'package:menu/screens/login.dart';
+import 'package:menu/services/auth.dart';
 import 'package:menu/services/database.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +37,9 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
-  User? user = null;
+  model.User? user = null;
 
-  setUser(user){
+  void setUser(model.User? user) {
     setState(() {
       this.user = user;
     });
@@ -44,9 +47,18 @@ class _WrapperState extends State<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
-
     return user != null
-        ? MyHomePage(setUser: setUser)
+        // ?  MyHomePage(setUser: setUser)
+        ? ChangeNotifierProvider<model.User>(
+        create: (context) => user!,
+            // model.User(uid: user!.uid,
+            //     phoneNumber: user!.phoneNumber!,
+            //     name: 'name',
+            //     classYear: 2019,
+            //     communities: [],
+            //     eventsAttending: [],
+            //     eventsHosting: []),
+        child: MyHomePage(setUser: setUser))
         : Login(setUser: setUser);
   }
 }
