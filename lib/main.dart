@@ -47,7 +47,7 @@ class _WrapperState extends State<Wrapper> {
     return user != null
         ? ChangeNotifierProvider<model.User>(
         create: (context) => user!,
-        child: MyHomePage(setUser: setUser))
+        child: Home(setUser: setUser))
         : Login(setUser: setUser);
   }
 }
