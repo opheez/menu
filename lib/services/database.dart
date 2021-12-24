@@ -30,9 +30,18 @@ class FirestoreDb {
   // }
 
 
-  Future<List<Event>> getEvents(String cid) async {
+  Future<List<Event>> getAllEvents(String cid) async {
     var dbEvents = await firestore
         .collection('events').where('cid', isEqualTo: cid).get();
+
+    return List.generate(dbEvents.docs.length, (i) {
+      return Event.fromMap(dbEvents.docs[i].id, dbEvents.docs[i].data());
+    });
+  }
+
+  Future<List<Event>> getOpenEvents(String cid, String uid) async {
+    var dbEvents = await firestore
+        .collection('events').where('cid', isEqualTo: cid).where('hostId', isNotEqualTo: uid).get();
 
     return List.generate(dbEvents.docs.length, (i) {
       return Event.fromMap(dbEvents.docs[i].id, dbEvents.docs[i].data());

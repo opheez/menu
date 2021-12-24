@@ -16,7 +16,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
   final AuthService _auth = AuthService.instance;
   final FirestoreDb _db = FirestoreDb.instance;
   bool loading = true;
@@ -25,13 +25,38 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // load events
-    _db.getEvents("1").then((eventList) => {
-          setState(() {
-            this.eventList = eventList;
-            loading = false;
-          })
+    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      _db.getOpenEvents("1", Provider.of<User>(context).uid).then((eventList) {
+        print(eventList);
+        setState(() {
+          this.eventList = eventList;
+          loading = false;
         });
+      });
+
+    });
+  }
+
+  @override
+  void dispose(){
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // came back to Foreground
+      // load events
+      _db.getOpenEvents("1", Provider.of<User>(context).uid).then((eventList) {
+        print(eventList);
+        setState(() {
+          this.eventList = eventList;
+          loading = false;
+        });
+      });
+    }
   }
 
   @override

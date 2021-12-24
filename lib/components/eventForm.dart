@@ -23,6 +23,8 @@ class EventFormState extends State<EventForm> {
 
   @override
   Widget build(BuildContext context) {
+    String uid = Provider.of<User>(widget.buildContext, listen: true).uid;
+
     return AlertDialog(
       title: const Text("Create event"),
       content: Column(
@@ -80,7 +82,7 @@ class EventFormState extends State<EventForm> {
           onPressed: () async {
             await _db.createEvent({
               'cid': '1',
-              'hostId': Provider.of<User>(widget.buildContext, listen: true).uid,
+              'hostId': uid,
               'durationMin': int.parse(durationController.text),
               'maxPeople': int.parse(maxPeopleController.text),
               'confirmedDatetime':
@@ -88,7 +90,7 @@ class EventFormState extends State<EventForm> {
               'confirmedPeople': []
             });
 
-            Navigator.of(widget.buildContext).pop();
+            Navigator.of(context).pop();
           },
         )
       ],
