@@ -39,7 +39,7 @@ class Event {
             durationMin: map['durationMin']! as int,
             maxPeople: map['maxPeople']! as int,
             confirmedDatetime:
-                (map['confirmedDatetime']! as Timestamp).toDate(),
+              (map['confirmedDatetime']! as Timestamp).toDate(),
             confirmedPeople:
                 List<String>.from(map['confirmedPeople']! as List));
 

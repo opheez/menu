@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:menu/models/event.dart';
+import 'package:menu/screens/chat.dart';
 
 class EventDetails extends StatefulWidget {
   final Event event;
@@ -16,14 +17,31 @@ class _EventDetailsState extends State<EventDetails> {
     return Scaffold(
       appBar: AppBar(title: Text('Event Title')),
       body: Center(
-        child: Column(
+        child: Stack(
           children: [
-            Text("Host: ${widget.event.hostId}"),
-            Text("Confirmed attendees: ${widget.event.confirmedPeople}"),
-            Text("Private: ${widget.event.private.toString()}"),
-            Text("When: ${widget.event.confirmedDatetime.toString()}"),
-            Text("Duration: ${widget.event.durationMin}"),
-            Text("Max people: ${widget.event.maxPeople}"),
+            Container(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.end,
+                  // hei: MainAxisSize.max,
+                  children: [
+                    Text("Host: ${widget.event.hostId}"),
+                    Text("Confirmed attendees: ${widget.event.confirmedPeople}"),
+                    Text("Private: ${widget.event.private.toString()}"),
+                    Text("When: ${widget.event.confirmedDatetime.toString()}"),
+                    Text("Duration: ${widget.event.durationMin}"),
+                    Text("Max people: ${widget.event.maxPeople}"),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              // bottom: 0,
+              child: Align(
+                alignment: FractionalOffset.bottomCenter,
+                  child: Chat(event: widget.event)),
+            ),
           ],
         ),
       ),
