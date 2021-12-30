@@ -23,8 +23,7 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      _db.getAllEvents("1").then((eventList) {
-        print(eventList);
+      _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
         setState(() {
           this.eventList = eventList;
           loading = false;
@@ -45,8 +44,7 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // came back to Foreground
       // load events
-      _db.getAllEvents("1").then((eventList) {
-        print(eventList);
+      _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
         setState(() {
           this.eventList = eventList;
           loading = false;
@@ -60,7 +58,7 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
     if (loading) return const CircularProgressIndicator();
 
     List<Widget> eventWidgets = List.generate(
-        eventList.length, (index) => EventTile(event: eventList[index]));
+        eventList.length, (index) => EventTile(event: eventList[index], attending: true,));
 
     return ListView(
       children: <Widget>[

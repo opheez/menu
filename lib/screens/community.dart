@@ -24,7 +24,6 @@ class _CommunityState extends State<Community> with WidgetsBindingObserver {
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       _db.getOpenEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
-        print(eventList);
         setState(() {
           this.eventList = eventList;
           loading = false;
@@ -46,7 +45,6 @@ class _CommunityState extends State<Community> with WidgetsBindingObserver {
       // came back to Foreground
       // load events
       _db.getOpenEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
-        print(eventList);
         setState(() {
           this.eventList = eventList;
           loading = false;

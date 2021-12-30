@@ -43,8 +43,24 @@ class FirestoreDb {
     var dbEvents = await firestore
         .collection('events').where('cid', isEqualTo: cid).where('hostId', isNotEqualTo: uid).get();
 
-    return List.generate(dbEvents.docs.length, (i) {
-      return Event.fromMap(dbEvents.docs[i].id, dbEvents.docs[i].data());
+    // filter out events that the user is attending TODO: possibly change confirmedPeople to be map???
+    var openEvents = dbEvents.docs.where((element) => !element.data()['confirmedPeople'].contains(uid)).toList();
+    print(openEvents);
+    return List.generate(openEvents.length, (i) {
+      return Event.fromMap(openEvents[i].id, openEvents[i].data());
+    });
+  }
+
+  Future<List<Event>> getUserEvents(String cid, String uid) async {
+    var hostedEvents = await firestore
+        .collection('events').where('cid', isEqualTo: cid).where('hostId', isEqualTo: uid).get();
+    var attendingEvents = await firestore
+        .collection('events').where('cid', isEqualTo: cid).where('confirmedPeople', arrayContains: uid).get();
+
+    List dbEvents = hostedEvents.docs + attendingEvents.docs;
+
+    return List.generate(dbEvents.length, (i) {
+      return Event.fromMap(dbEvents[i].id, dbEvents[i].data());
     });
   }
 
@@ -60,6 +76,14 @@ class FirestoreDb {
 
   Future<void> setEvent(Event event) async {
 
+  }
+
+  Future<void> rsvpEvent(Event event, String uid) async {
+    // TODO: instead of taking uid as input, get the current user's uid
+    // TODO: try catch if doc doesn't exist
+    DocumentReference eventRef = firestore.collection('events').doc(event.eid);
+
+    await eventRef.update({'confirmedPeople': FieldValue.arrayUnion([uid])});
   }
 
 
