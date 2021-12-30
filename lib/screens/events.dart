@@ -61,18 +61,7 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
         eventList.length, (index) => EventTile(event: eventList[index], attending: true,));
 
     return ListView(
-      children: <Widget>[
-        ElevatedButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext dialogContext) {
-                    return EventForm(buildContext: context);
-                  });
-            },
-            child: const Text("Create a new event")),
-        ...eventWidgets
-      ],
+      children: eventWidgets,
     );
   }
 }
