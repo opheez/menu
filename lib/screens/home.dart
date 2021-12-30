@@ -4,6 +4,7 @@ import 'package:menu/components/eventTile.dart';
 import 'package:menu/models/event.dart';
 import 'package:menu/models/user.dart';
 import 'package:menu/screens/community.dart';
+import 'package:menu/screens/profile.dart';
 import 'package:menu/services/auth.dart';
 import 'package:menu/services/database.dart';
 import 'package:provider/provider.dart';
@@ -12,24 +13,21 @@ import 'events.dart';
 
 class Home extends StatefulWidget {
   Function setUser;
+  final List<Widget> widgetOptions;
 
-  Home({Key? key, required this.setUser}) : super(key: key);
+  Home({Key? key, required this.setUser}) :  widgetOptions = [
+  Community(),
+  Events(),
+  Profile(setUser: setUser),
+  ], super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final AuthService _auth = AuthService.instance;
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Community(),
-    Events(),
-    Text(
-      'Index 2: School',
-    ),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -42,24 +40,10 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("menu"),
+        title: const Text("menu"),
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex)
-        // ListView(
-        //   children: <Widget>[
-        //     ElevatedButton(
-        //         onPressed: () {
-        //           showDialog(
-        //               context: context,
-        //               builder: (BuildContext dialogContext) {
-        //                 return EventForm(buildContext: context);
-        //               });
-        //         },
-        //         child: const Text("Create a new event")),
-        //     ...eventWidgets
-        //   ],
-        // ),
+        child: widget.widgetOptions.elementAt(_selectedIndex)
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -71,15 +55,6 @@ class _HomeState extends State<Home> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber,
         onTap: _onItemTapped,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          _auth.signOut(() {
-            widget.setUser(null);
-          });
-        },
-        tooltip: 'Log out',
-        child: const Icon(Icons.logout),
       ),
     );
   }
