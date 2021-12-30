@@ -17,6 +17,7 @@ class EventTile extends StatelessWidget {
               Text(
                   event.confirmedDatetime.toString()
               ),
+              Text(event.private.toString()),
               const Text("<Location>")
             ],
           ),

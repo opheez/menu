@@ -5,7 +5,7 @@ class Event {
   final String cid;
   final String hostId;
 
-  // bool private;
+  bool private;
   int durationMin;
   int maxPeople;
 
@@ -24,7 +24,7 @@ class Event {
       {required this.eid,
       required this.cid,
       required this.hostId,
-      // this.private = false,
+      this.private = false,
       this.durationMin = 60,
       this.maxPeople = 3,
       required this.confirmedDatetime,
@@ -35,6 +35,7 @@ class Event {
             eid: id,
             cid: map['cid']! as String,
             hostId: map['hostId']! as String,
+            private: (map['private'] ?? false) as bool,
             durationMin: map['durationMin']! as int,
             maxPeople: map['maxPeople']! as int,
             confirmedDatetime:
@@ -47,6 +48,7 @@ class Event {
       'eid': eid,
       'cid': cid,
       'hostId': hostId,
+      'private': private,
       'durationMin': durationMin,
       'maxPeople': maxPeople,
       'confirmedDatetime': confirmedDatetime,
