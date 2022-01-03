@@ -13,7 +13,7 @@ class Message {
         required this.timestamp
         });
 
-  Message.fromMap(String id, Map<String, Object?> map)
+  Message.fromMap(Map<String, Object?> map)
       : this(
     eid: map['eid'] as String,
     senderId: map['senderId'] as String,

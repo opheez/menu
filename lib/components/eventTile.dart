@@ -10,15 +10,22 @@ class EventTile extends StatelessWidget {
   final bool attending;
   final FirestoreDb _db = FirestoreDb.instance;
 
-  EventTile({Key? key, required this.event, this.attending = false}) : super(key: key);
+  EventTile({Key? key, required this.event, this.attending = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: TextButton(
-        onPressed: (){
-          // navigator push
-          Navigator.push(context, MaterialPageRoute(builder: (context) => EventDetails(event: event)));
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (buildContext) => EventDetails(
+                        context: context,
+                        event: event,
+                        attending: attending,
+                      )));
         },
         child: ListTile(
           leading: FlutterLogo(size: 72.0),
@@ -30,12 +37,15 @@ class EventTile extends StatelessWidget {
               const Text("<Location>")
             ],
           ),
-          trailing: attending ? null : IconButton(
-            icon: Icon(Icons.add_circle_outline),
-            onPressed: () {
-              _db.rsvpEvent(event, Provider.of<User>(context, listen: false).uid);
-            },
-          ),
+          trailing: attending
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.add_circle_outline),
+                  onPressed: () {
+                    _db.rsvpEvent(
+                        event, Provider.of<User>(context, listen: false).uid);
+                  },
+                ),
           isThreeLine: true,
         ),
       ),

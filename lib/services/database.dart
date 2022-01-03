@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:menu/models/event.dart';
+import 'package:menu/models/message.dart';
 import 'package:menu/models/user.dart';
 
 class FirestoreDb {
@@ -29,10 +30,9 @@ class FirestoreDb {
   //
   // }
 
-
   Future<List<Event>> getAllEvents(String cid) async {
-    var dbEvents = await firestore
-        .collection('events').where('cid', isEqualTo: cid).get();
+    var dbEvents =
+        await firestore.collection('events').where('cid', isEqualTo: cid).get();
 
     return List.generate(dbEvents.docs.length, (i) {
       return Event.fromMap(dbEvents.docs[i].id, dbEvents.docs[i].data());
@@ -41,10 +41,15 @@ class FirestoreDb {
 
   Future<List<Event>> getOpenEvents(String cid, String uid) async {
     var dbEvents = await firestore
-        .collection('events').where('cid', isEqualTo: cid).where('hostId', isNotEqualTo: uid).get();
+        .collection('events')
+        .where('cid', isEqualTo: cid)
+        .where('hostId', isNotEqualTo: uid)
+        .get();
 
     // filter out events that the user is attending TODO: possibly change confirmedPeople to be map???
-    var openEvents = dbEvents.docs.where((element) => !element.data()['confirmedPeople'].contains(uid)).toList();
+    var openEvents = dbEvents.docs
+        .where((element) => !element.data()['confirmedPeople'].contains(uid))
+        .toList();
     print(openEvents);
     return List.generate(openEvents.length, (i) {
       return Event.fromMap(openEvents[i].id, openEvents[i].data());
@@ -53,9 +58,15 @@ class FirestoreDb {
 
   Future<List<Event>> getUserEvents(String cid, String uid) async {
     var hostedEvents = await firestore
-        .collection('events').where('cid', isEqualTo: cid).where('hostId', isEqualTo: uid).get();
+        .collection('events')
+        .where('cid', isEqualTo: cid)
+        .where('hostId', isEqualTo: uid)
+        .get();
     var attendingEvents = await firestore
-        .collection('events').where('cid', isEqualTo: cid).where('confirmedPeople', arrayContains: uid).get();
+        .collection('events')
+        .where('cid', isEqualTo: cid)
+        .where('confirmedPeople', arrayContains: uid)
+        .get();
 
     List dbEvents = hostedEvents.docs + attendingEvents.docs;
 
@@ -74,21 +85,34 @@ class FirestoreDb {
     await firestore.collection('events').add(eventMap);
   }
 
-  Future<void> setEvent(Event event) async {
-
-  }
+  Future<void> setEvent(Event event) async {}
 
   Future<void> rsvpEvent(Event event, String uid) async {
     // TODO: instead of taking uid as input, get the current user's uid
     // TODO: try catch if doc doesn't exist
     DocumentReference eventRef = firestore.collection('events').doc(event.eid);
 
-    await eventRef.update({'confirmedPeople': FieldValue.arrayUnion([uid])});
+    await eventRef.update({
+      'confirmedPeople': FieldValue.arrayUnion([uid])
+    });
   }
-
 
 // Future<Event> getEvent(String eid){
 //
 // }
 
+  Future<void> sendMessage(Message msg) async {
+    await firestore.collection('messages').add(msg.toMap());
+  }
+
+  Stream<List<Message>> getEventMessages(String eid) {
+    // TODO auth
+    Stream<List<Message>> messages = firestore
+        .collection('messages')
+        .where('eid', isEqualTo: eid)
+        .orderBy('timestamp')
+        .snapshots()
+        .map((query) => query.docs.map((doc) => Message.fromMap(doc.data())).toList());
+    return messages;
+  }
 }
