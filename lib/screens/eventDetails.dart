@@ -40,6 +40,7 @@ class _EventDetailsState extends State<EventDetails> {
                     Text("When: ${widget.event.confirmedDatetime.toString()}"),
                     Text("Duration: ${widget.event.durationMin}"),
                     Text("Max people: ${widget.event.maxPeople}"),
+                    Text("Event Details: ${widget.event.details}")
                   ],
                 ),
               ),

@@ -29,12 +29,11 @@ class EventTile extends StatelessWidget {
         },
         child: ListTile(
           leading: FlutterLogo(size: 72.0),
-          title: Text('Three-line ListTile'),
+          title: Text(event.confirmedDatetime.toString() + " at <LOCATION>"),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(event.confirmedDatetime.toString()),
-              const Text("<Location>")
+              Text(event.details),
             ],
           ),
           trailing: attending

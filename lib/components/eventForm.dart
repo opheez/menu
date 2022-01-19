@@ -20,6 +20,7 @@ class EventFormState extends State<EventForm> {
   final durationController = TextEditingController();
   final maxPeopleController = TextEditingController();
   final confirmedStartController = TextEditingController();
+  final detailsController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +74,11 @@ class EventFormState extends State<EventForm> {
               child: TextFormField(
                 readOnly: true,
                 controller: confirmedStartController,
-              ))
+              )),
+          TextFormField(
+            controller: detailsController,
+            decoration: const InputDecoration(labelText: 'Event details'),
+          ),
         ],
       ),
       actions: [
@@ -87,7 +92,8 @@ class EventFormState extends State<EventForm> {
               'maxPeople': int.parse(maxPeopleController.text),
               'confirmedDatetime':
                   DateTime.parse(confirmedStartController.text),
-              'confirmedPeople': []
+              'confirmedPeople': [],
+              'details': detailsController.text
             });
 
             Navigator.of(context).pop();

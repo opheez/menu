@@ -20,6 +20,8 @@ class Event {
   // List<DateTime> preferredDatetimes;
   // List<String> preferredLocations;
 
+  String details;
+
   Event(
       {required this.eid,
       required this.cid,
@@ -28,7 +30,9 @@ class Event {
       this.durationMin = 60,
       this.maxPeople = 3,
       required this.confirmedDatetime,
-      required this.confirmedPeople});
+      required this.confirmedPeople,
+      this.details = ""
+      });
 
   Event.fromMap(String id, Map<String, Object?> map)
       : this(
@@ -41,7 +45,9 @@ class Event {
             confirmedDatetime:
               (map['confirmedDatetime']! as Timestamp).toDate(),
             confirmedPeople:
-                List<String>.from(map['confirmedPeople']! as List));
+                List<String>.from(map['confirmedPeople']! as List),
+            details: (map['details'] ?? "") as String,
+  );
 
   Map<String, Object?> toMap(){
     return {
@@ -52,7 +58,8 @@ class Event {
       'durationMin': durationMin,
       'maxPeople': maxPeople,
       'confirmedDatetime': confirmedDatetime,
-      'confirmedPeople': confirmedPeople
+      'confirmedPeople': confirmedPeople,
+      'details': details
     };
   }
 }
