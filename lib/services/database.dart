@@ -49,8 +49,7 @@ class FirestoreDb {
 
     // filter out events that the user is attending TODO: possibly change confirmedPeople to be map???
     var openEvents = dbEvents.docs
-        .where((element) => !element.data()['confirmedPeople'].contains(uid))
-        .where((element) => !(element.data()['hostId'] == cid))
+        .where((element) => !element.data()['confirmedPeople'].contains(uid) && !(element.data()['hostId'] == uid))
         .toList();
 
     return List.generate(openEvents.length, (i) {
