@@ -39,18 +39,20 @@ class FirestoreDb {
     });
   }
 
+  /// Gets future events that the user is not already attending
   Future<List<Event>> getOpenEvents(String cid, String uid) async {
     var dbEvents = await firestore
         .collection('events')
         .where('cid', isEqualTo: cid)
-        .where('hostId', isNotEqualTo: uid)
+        .where('confirmedDatetime', isGreaterThanOrEqualTo: DateTime.now())
         .get();
 
     // filter out events that the user is attending TODO: possibly change confirmedPeople to be map???
     var openEvents = dbEvents.docs
         .where((element) => !element.data()['confirmedPeople'].contains(uid))
+        .where((element) => !(element.data()['hostId'] == cid))
         .toList();
-    print(openEvents);
+
     return List.generate(openEvents.length, (i) {
       return Event.fromMap(openEvents[i].id, openEvents[i].data());
     });
@@ -112,7 +114,8 @@ class FirestoreDb {
         .where('eid', isEqualTo: eid)
         .orderBy('timestamp')
         .snapshots()
-        .map((query) => query.docs.map((doc) => Message.fromMap(doc.data())).toList());
+        .map((query) =>
+            query.docs.map((doc) => Message.fromMap(doc.data())).toList());
     return messages;
   }
 }

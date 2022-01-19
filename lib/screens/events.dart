@@ -17,6 +17,7 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
   final FirestoreDb _db = FirestoreDb.instance;
   bool loading = true;
   late List<Event> eventList;
+  late List<Event> pastEventList;
 
   @override
   void initState() {
@@ -25,7 +26,8 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
         setState(() {
-          this.eventList = eventList;
+          this.eventList =  eventList.where((element) => element.confirmedDatetime.isAfter(DateTime.now())).toList();
+          pastEventList = eventList.where((element) => element.confirmedDatetime.isBefore(DateTime.now())).toList();
           loading = false;
         });
       });
@@ -46,7 +48,8 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
       // load events
       _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
         setState(() {
-          this.eventList = eventList;
+          this.eventList =  eventList.where((element) => element.confirmedDatetime.isAfter(DateTime.now())).toList();
+          pastEventList = eventList.where((element) => element.confirmedDatetime.isBefore(DateTime.now())).toList();
           loading = false;
         });
       });
@@ -59,9 +62,24 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
 
     List<Widget> eventWidgets = List.generate(
         eventList.length, (index) => EventTile(event: eventList[index], attending: true,));
+    List<Widget> pastEventWidgets = List.generate(
+        pastEventList.length, (index) => EventTile(event: pastEventList[index], attending: true,));
 
-    return ListView(
-      children: eventWidgets,
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            children: eventWidgets,
+          ),
+        ),
+        const Text("Past Events"),
+        SizedBox(
+          height: 150,
+          child: ListView(
+            children: pastEventWidgets,
+          ),
+        )
+      ],
     );
   }
 }
