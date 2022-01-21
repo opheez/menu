@@ -11,7 +11,6 @@ class Event {
 
   // List<DateTime> tentDatetimes;
   // List<String> tentLocations;
-  // List<String> tentPeople;
   DateTime confirmedDatetime;
 
   // String confirmedLocation;
@@ -22,6 +21,8 @@ class Event {
 
   String details;
 
+  List<Map> joinRequests;
+
   Event(
       {required this.eid,
       required this.cid,
@@ -31,8 +32,9 @@ class Event {
       this.maxPeople = 3,
       required this.confirmedDatetime,
       required this.confirmedPeople,
-      this.details = ""
-      });
+      this.details = "",
+      required this.joinRequests});
+      // : joinRequests = joinRequests ?? [];
 
   Event.fromMap(String id, Map<String, Object?> map)
       : this(
@@ -43,13 +45,13 @@ class Event {
             durationMin: map['durationMin']! as int,
             maxPeople: map['maxPeople']! as int,
             confirmedDatetime:
-              (map['confirmedDatetime']! as Timestamp).toDate(),
-            confirmedPeople:
-                List<String>.from(map['confirmedPeople']! as List),
+                (map['confirmedDatetime']! as Timestamp).toDate(),
+            confirmedPeople: List<String>.from(map['confirmedPeople']! as List),
             details: (map['details'] ?? "") as String,
+            joinRequests: ((map['joinRequests'] ?? []) as List).map((e) => e as Map).toList()
   );
 
-  Map<String, Object?> toMap(){
+  Map<String, Object?> toMap() {
     return {
       'eid': eid,
       'cid': cid,
@@ -59,7 +61,8 @@ class Event {
       'maxPeople': maxPeople,
       'confirmedDatetime': confirmedDatetime,
       'confirmedPeople': confirmedPeople,
-      'details': details
+      'details': details,
+      'joinRequests': joinRequests
     };
   }
 }

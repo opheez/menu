@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:menu/components/requestForm.dart';
 import 'package:menu/models/event.dart';
 import 'package:menu/screens/eventDetails.dart';
 import 'package:menu/services/database.dart';
-import 'package:provider/provider.dart';
-import 'package:menu/models/user.dart';
 
 class EventTile extends StatelessWidget {
   final Event event;
   final bool attending;
-  final FirestoreDb _db = FirestoreDb.instance;
 
-  EventTile({Key? key, required this.event, this.attending = false})
+  const EventTile({Key? key, required this.event, this.attending = false})
       : super(key: key);
 
   @override
@@ -33,16 +31,20 @@ class EventTile extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text("Hosted by: " + event.hostId),
               Text(event.details),
             ],
           ),
           trailing: attending
               ? null
               : IconButton(
-                  icon: Icon(Icons.add_circle_outline),
+                  icon: const Icon(Icons.add_circle_outline),
                   onPressed: () {
-                    _db.rsvpEvent(
-                        event, Provider.of<User>(context, listen: false).uid);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext dialogContext) {
+                          return RequestForm(buildContext: context, event: event);
+                        });
                   },
                 ),
           isThreeLine: true,

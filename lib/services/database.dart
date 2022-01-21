@@ -30,6 +30,8 @@ class FirestoreDb {
   //
   // }
 
+  /// EVENTS
+
   Future<List<Event>> getAllEvents(String cid) async {
     var dbEvents =
         await firestore.collection('events').where('cid', isEqualTo: cid).get();
@@ -53,6 +55,7 @@ class FirestoreDb {
         .toList();
 
     return List.generate(openEvents.length, (i) {
+      print(openEvents[i].data());
       return Event.fromMap(openEvents[i].id, openEvents[i].data());
     });
   }
@@ -86,21 +89,45 @@ class FirestoreDb {
     await firestore.collection('events').add(eventMap);
   }
 
+  Stream<Event> getEventStream(String eid){
+    return firestore.collection('events').doc(eid).snapshots()
+        .map((doc) => Event.fromMap(eid, doc.data()!));
+  }
+
   Future<void> setEvent(Event event) async {}
 
-  Future<void> rsvpEvent(Event event, String uid) async {
-    // TODO: instead of taking uid as input, get the current user's uid
+  /// Issue a join request to the event
+  Future<void> rsvpEvent(Event event, Map request) async {
+    // TODO: instead of taking uid as input, get the current user's uid from auth
     // TODO: try catch if doc doesn't exist
+    // TODO: verify that request has all of the required fields (uid)
     DocumentReference eventRef = firestore.collection('events').doc(event.eid);
 
     await eventRef.update({
-      'confirmedPeople': FieldValue.arrayUnion([uid])
+      'joinRequests': FieldValue.arrayUnion([request])
     });
+  }
+
+  /// Approve or decline a join request to the event
+  Future<void> ackRequest(Event event, Map request, bool approved) async {
+    // TODO: instead of taking uid as input, get the current user's uid from auth
+    // TODO: try catch if doc doesn't exist
+    // TODO: verify that request has all of the required fields (uid)
+    DocumentReference eventRef = firestore.collection('events').doc(event.eid);
+
+    approved ? await eventRef.update({
+      'confirmedPeople': FieldValue.arrayUnion([request['uid']]),
+      'joinRequests': FieldValue.arrayRemove([request])
+    }) : await eventRef.update({
+      'joinRequests': FieldValue.arrayRemove([request])
+    }) ;
   }
 
 // Future<Event> getEvent(String eid){
 //
 // }
+
+  /// MESSAGES
 
   Future<void> sendMessage(Message msg) async {
     await firestore.collection('messages').add(msg.toMap());
