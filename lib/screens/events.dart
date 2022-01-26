@@ -18,19 +18,14 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
   bool loading = true;
   late List<Event> eventList;
   late List<Event> pastEventList;
+  late List<Event> reqEventList;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
-        setState(() {
-          this.eventList =  eventList.where((element) => element.confirmedDatetime.isAfter(DateTime.now())).toList();
-          pastEventList = eventList.where((element) => element.confirmedDatetime.isBefore(DateTime.now())).toList();
-          loading = false;
-        });
-      });
+      getEventLists();
     });
   }
 
@@ -41,19 +36,23 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // came back to Foreground
-      // load events
-      _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid).then((eventList) {
-        setState(() {
-          this.eventList =  eventList.where((element) => element.confirmedDatetime.isAfter(DateTime.now())).toList();
-          pastEventList = eventList.where((element) => element.confirmedDatetime.isBefore(DateTime.now())).toList();
-          loading = false;
-        });
-      });
+      getEventLists();
     }
+  }
+
+  void getEventLists() async{
+    List<Event> eventList = await _db.getUserEvents("1", Provider.of<User>(context, listen: false).uid);
+    List<Event> reqEventList = await _db.getReqUserEvents("1", Provider.of<User>(context, listen: false).uid);
+
+    setState(() {
+      this.eventList =  eventList.where((element) => element.confirmedDatetime.isAfter(DateTime.now())).toList();
+      pastEventList = eventList.where((element) => element.confirmedDatetime.isBefore(DateTime.now())).toList();
+      this.reqEventList = reqEventList;
+      loading = false;
+    });
   }
 
   @override
@@ -64,12 +63,21 @@ class _EventsState extends State<Events> with WidgetsBindingObserver {
         eventList.length, (index) => EventTile(event: eventList[index], attending: true,));
     List<Widget> pastEventWidgets = List.generate(
         pastEventList.length, (index) => EventTile(event: pastEventList[index], attending: true,));
+    List<Widget> reqEventWidgets = List.generate(
+        reqEventList.length, (index) => EventTile(event: reqEventList[index], attending: true,));
 
     return Column(
       children: [
         Expanded(
           child: ListView(
             children: eventWidgets,
+          ),
+        ),
+        const Text("Requested Events"),
+        SizedBox(
+          height: 150,
+          child: ListView(
+            children: reqEventWidgets,
           ),
         ),
         const Text("Past Events"),

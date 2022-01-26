@@ -61,18 +61,51 @@ class FirestoreDb {
   }
 
   Future<List<Event>> getUserEvents(String cid, String uid) async {
+    List<Event> hosted = await getHostedUserEvents(cid, uid);
+    List<Event> attending = await getAttendUserEvents(cid, uid);
+
+    List<Event> all = hosted + attending;
+
+    all.sort((e1, e2) => e1.confirmedDatetime.isAfter(e2.confirmedDatetime) ? 1 : -1);
+    return all;
+  }
+
+  Future<List<Event>> getHostedUserEvents(String cid, String uid) async {
     var hostedEvents = await firestore
         .collection('events')
         .where('cid', isEqualTo: cid)
         .where('hostId', isEqualTo: uid)
         .get();
+
+    List dbEvents = hostedEvents.docs;
+
+    return List.generate(dbEvents.length, (i) {
+      return Event.fromMap(dbEvents[i].id, dbEvents[i].data());
+    });
+  }
+
+  Future<List<Event>> getAttendUserEvents(String cid, String uid) async {
     var attendingEvents = await firestore
         .collection('events')
         .where('cid', isEqualTo: cid)
         .where('confirmedPeople', arrayContains: uid)
         .get();
 
-    List dbEvents = hostedEvents.docs + attendingEvents.docs;
+    List dbEvents = attendingEvents.docs;
+
+    return List.generate(dbEvents.length, (i) {
+      return Event.fromMap(dbEvents[i].id, dbEvents[i].data());
+    });
+  }
+
+  Future<List<Event>> getReqUserEvents(String cid, String uid) async {
+    var requestedEvents = await firestore
+        .collection('events')
+        .where('cid', isEqualTo: cid)
+        .where('confirmedPeople', arrayContains: uid)
+        .get();
+
+    List dbEvents = requestedEvents.docs;
 
     return List.generate(dbEvents.length, (i) {
       return Event.fromMap(dbEvents[i].id, dbEvents[i].data());
