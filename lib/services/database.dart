@@ -55,7 +55,6 @@ class FirestoreDb {
         .toList();
 
     return List.generate(openEvents.length, (i) {
-      print(openEvents[i].data());
       return Event.fromMap(openEvents[i].id, openEvents[i].data());
     });
   }
@@ -66,7 +65,7 @@ class FirestoreDb {
 
     List<Event> all = hosted + attending;
 
-    all.sort((e1, e2) => e1.confirmedDatetime.isAfter(e2.confirmedDatetime) ? 1 : -1);
+    all.sort(recentFirst);
     return all;
   }
 
@@ -107,9 +106,12 @@ class FirestoreDb {
 
     List dbEvents = requestedEvents.docs;
 
-    return List.generate(dbEvents.length, (i) {
+    List<Event> reqEvents = List.generate(dbEvents.length, (i) {
       return Event.fromMap(dbEvents[i].id, dbEvents[i].data());
     });
+    reqEvents.sort(recentFirst);
+
+    return reqEvents;
   }
 
   Future<void> createEvent(Map<String, dynamic> eventMap) async {
@@ -177,4 +179,8 @@ class FirestoreDb {
             query.docs.map((doc) => Message.fromMap(doc.data())).toList());
     return messages;
   }
+
+  /// UTIL
+  int recentFirst(Event e1, Event e2) => e1.confirmedDatetime.isAfter(e2.confirmedDatetime) ? -1 : 1;
+
 }
