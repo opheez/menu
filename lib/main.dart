@@ -3,25 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:menu/models/user.dart' as model;
 import 'package:menu/screens/home.dart';
 import 'package:menu/screens/login.dart';
+import 'package:menu/services/auth.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final AuthService _auth = AuthService.instance;
+
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'menu',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return StreamProvider.value(
+      value: _auth.getUserStream(),
+      initialData: null,
+      child: MaterialApp(
+        title: 'menu',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const Wrapper(),
       ),
-      home: const Wrapper(),
     );
   }
 }
@@ -34,20 +41,11 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
-  model.User? user = null;
-
-  void setUser(model.User? user) {
-    setState(() {
-      this.user = user;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return user != null
-        ? ChangeNotifierProvider<model.User>(
-        create: (context) => user!,
-        child: Home(setUser: setUser))
-        : Login(setUser: setUser);
+    return Provider.of<model.User?>(context) != null
+        ? Home()
+        : Login();
   }
 }

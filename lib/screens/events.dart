@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:menu/components/eventForm.dart';
 import 'package:menu/components/eventTile.dart';
 import 'package:menu/models/event.dart';
 import 'package:menu/models/user.dart';

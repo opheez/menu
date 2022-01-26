@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:menu/services/auth.dart';
 
-import 'home.dart';
-
 enum MobileVerificationState { MOBILE_FORM, OTP_FORM }
 
 class Login extends StatefulWidget {
-  final Function setUser;
-  
-  const Login({Key? key, required this.setUser}) : super(key: key);
+
+  const Login({Key? key}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -88,10 +85,7 @@ class _LoginState extends State<Login> {
                   loading = false;
                 });
 
-                if (userCredential != null && userCredential.user != null) {
-                  // widget.setUser(userCredential.user);
-                  widget.setUser(auth.getCurrentUser()!);
-                } else {
+                if (userCredential == null || userCredential.user == null) {
                   _scaffoldKey.currentState?.showSnackBar(
                       SnackBar(content: Text(errorMsg)));
                 }

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:menu/services/auth.dart';
 
 class Profile extends StatefulWidget {
-  Function setUser;
 
-  Profile({Key? key, required this.setUser}) : super(key: key);
+  Profile({Key? key}) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -19,9 +18,7 @@ class _ProfileState extends State<Profile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ElevatedButton(onPressed: () async {
-          _auth.signOut(() {
-            widget.setUser(null);
-          });
+          _auth.signOut();
         }, child: const Text("Logout"))
       ],
     );

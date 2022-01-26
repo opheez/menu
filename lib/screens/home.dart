@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:menu/components/eventForm.dart';
-import 'package:menu/components/eventTile.dart';
-import 'package:menu/models/event.dart';
-import 'package:menu/models/user.dart';
 import 'package:menu/screens/community.dart';
 import 'package:menu/screens/profile.dart';
-import 'package:menu/services/auth.dart';
-import 'package:menu/services/database.dart';
-import 'package:provider/provider.dart';
 
 import 'events.dart';
 
 class Home extends StatefulWidget {
-  Function setUser;
   final List<Widget> widgetOptions;
 
-  Home({Key? key, required this.setUser}) :  widgetOptions = [
+  Home({Key? key}) :  widgetOptions = [
   Community(),
   Events(),
-  Profile(setUser: setUser),
+  Profile(),
   ], super(key: key);
 
   @override

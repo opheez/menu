@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:menu/models/user.dart' as model;
 
 class AuthService {
-
   // makes this a singleton class
   AuthService._privateConstructor();
+
   static final AuthService instance = AuthService._privateConstructor();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -14,10 +14,11 @@ class AuthService {
         verificationId: verificationId, smsCode: smsCode);
     late final UserCredential? authCredential;
     late final String errorMsg;
-    try{
+    try {
       authCredential = await _auth.signInWithCredential(phoneAuthCredential);
+      // TODO: create user if does not exist in db
       errorMsg = "";
-    } on FirebaseAuthException catch (e){
+    } on FirebaseAuthException catch (e) {
       errorMsg = e.message as String;
       authCredential = null;
     }
@@ -59,24 +60,36 @@ class AuthService {
     return null;
   }
 
-  void signOut(Function callback) async {
+  void signOut() async {
     await _auth.signOut();
-    callback();
   }
 
-  model.User? getCurrentUser(){
+  model.User? getCurrentUser() {
     User? user = _auth.currentUser;
-    if (user != null){
-      return model.User(uid: user.uid,
-              phoneNumber: user.phoneNumber!,
-              name: user.displayName ?? "",
-              classYear: 0,
-              communities: [],
-              eventsAttending: [],
-              eventsHosting: []);
+    // TODO: fetch user from database
+    if (user != null) {
+      return model.User(
+          uid: user.uid,
+          phoneNumber: user.phoneNumber!,
+          name: user.displayName ?? "",
+          classYear: 0,
+          communities: [],
+          eventsAttending: [],
+          eventsHosting: []);
     }
     return null;
   }
 
-
+  Stream<model.User?> getUserStream() {
+    return _auth.authStateChanges().map((authUser) => authUser == null
+        ? null
+        : model.User(
+            uid: authUser.uid,
+            phoneNumber: authUser.phoneNumber!,
+            name: authUser.displayName ?? "",
+            classYear: 0,
+            communities: [],
+            eventsAttending: [],
+            eventsHosting: []));
+  }
 }
